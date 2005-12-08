@@ -1,0 +1,29 @@
+Revision history for Perl extension UPnP.
+
+2005-12-10 Satoshi Konno <skonno@cybergarage.org>
+
+        * v1.1
+        * Changed the package from UPnP to Net::UPnP.
+        * Added 'use warnings' to all packages.
+        * Chanded get*() in Service.pm to return '' instead of undef when the value is not defined.
+
+2005-12-09 Satoshi Konno <skonno@cybergarage.org>
+
+        * v1.0.3
+        * Changed UPnP::AV::Item, UPnP::Device and Changed UPnP::HTTPResponse to parse the pod correctly.
+
+2005-12-08 Satoshi Konno <skonno@cybergarage.org>
+
+        * v1.0.2
+        * Changed dms2vodcast.pl to add a option for MPEG4 output format such as 'ipod' and 'psp'.
+
+2005-12-07 Satoshi Konno <skonno@cybergarage.org>
+
+        * v1.0.1
+        * Changed dms2vodcast.pl upnpavdump.pl to parse all items in the content directory.
+        * Changed upnpavdump.pl to parse all items in the content directory.
+
+2005-12-06 Satoshi Konno <skonno@cybergarage.org>
+
+        * The first release.
+
