@@ -57,6 +57,16 @@ sub setdescription() {
 
 sub getdescription() {
 	my($this) = shift;
+	my %args = (
+		name => undef,	
+		@_,
+	);
+	if ($args{name}) {
+		unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<$args{name}>(.*)<\/$args{name}>/i) {
+			return '';
+		}
+	 	return $1;
+	}
 	$this->{$Net::UPnP::Device::_DESCRIPTION};
  }
 
@@ -140,10 +150,7 @@ sub getlocation() {
 
 sub getdevicetype() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<deviceType>(.*)<\/deviceType>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdescription(name => 'deviceType');
  }
 
 #------------------------------
@@ -152,10 +159,70 @@ sub getdevicetype() {
 
 sub getfriendlyname() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<friendlyName>(.*)<\/friendlyName>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdescription(name => 'friendlyName');
+ }
+
+#------------------------------
+# getmanufacturer
+#------------------------------
+
+sub getmanufacturer() {
+	my($this) = shift;
+	$this->getdescription(name => 'manufacturer');
+ }
+
+#------------------------------
+# getmanufacturerurl
+#------------------------------
+
+sub getmanufacturerurl() {
+	my($this) = shift;
+	$this->getdescription(name => 'manufacturerURL');
+ }
+
+#------------------------------
+# getmodeldescription
+#------------------------------
+
+sub getmodeldescription() {
+	my($this) = shift;
+	$this->getdescription(name => 'modelDescription');
+ }
+
+#------------------------------
+# getmodelname
+#------------------------------
+
+sub getmodelname() {
+	my($this) = shift;
+	$this->getdescription(name => 'modelName');
+ }
+
+#------------------------------
+# getmodelnumber
+#------------------------------
+
+sub getmodelnumber() {
+	my($this) = shift;
+	$this->getdescription(name => 'modelNumber');
+ }
+
+#------------------------------
+# getmodelurl
+#------------------------------
+
+sub getmodelurl() {
+	my($this) = shift;
+	$this->getdescription(name => 'modelURL');
+ }
+
+#------------------------------
+# getserialnumber
+#------------------------------
+
+sub getserialnumber() {
+	my($this) = shift;
+	$this->getdescription(name => 'serialNumber');
  }
 
 #------------------------------
@@ -164,10 +231,16 @@ sub getfriendlyname() {
 
 sub getudn() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<UDN>(.*)<\/UDN>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdescription(name => 'UDN');
+ }
+
+#------------------------------
+# getupc
+#------------------------------
+
+sub getupc() {
+	my($this) = shift;
+	$this->getdescription(name => 'UPC');
  }
 
 #------------------------------
@@ -176,10 +249,7 @@ sub getudn() {
 
 sub geturlbase() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<URLBase>(.*)<\/URLBase>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdescription(name => 'URLBase');
  }
 
 1;
@@ -215,7 +285,6 @@ Net::UPnP::Device - Perl extension for UPnP.
         %action_in_arg = (
                 'ObjectID' => 0,
                 'BrowseFlag' => 'BrowseDirectChildren',
-
                 'Filter' => '*',
                 'StartingIndex' => 0,
                 'RequestedCount' => 0,
@@ -246,9 +315,13 @@ The package is used a object of UPnP device.
 
 =item B<getdescription> - get the description.
 
-    $description = $dev->getdescription();
+    $description = $dev->getdescription(
+    	                        name => $name # undef
+                             );
 
-Get the device description from the SSDP location header.
+Get the device description of the SSDP location header. 
+	
+The function returns the all description when the name parameter is not specified, otherwise return a value the specified name.
 
 =item B<getdevicetype> - get the device type.
 
@@ -262,11 +335,59 @@ Get the device type from the device description.
 
 Get the friendly name from the device description.
 
-=item B<getudn> - get the device type.
+=item B<getmanufacturer> - get the manufacturer.
+
+    $manufacturer = $dev->getmanufacturer();
+
+Get the manufacturer name from the device description.
+
+=item B<getmanufacturerrul> - get the manufacturer url.
+
+    $manufacturer_url = $dev->getmanufacturerrul();
+
+Get the manufacturer url from the device description.
+
+=item B<getmodeldescription> - get the model description.
+
+    $model_description = $dev->getmodeldescription();
+
+Get the model description from the device description.
+
+=item B<getmodelname> - get the model name.
+
+    $model_name = $dev->getmodelname();
+
+Get the model name from the device description.
+
+=item B<getmodelnumber> - get the model number.
+
+    $model_number = $dev->getmodelnumber();
+
+Get the model number from the device description.
+
+=item B<getmodelurl> - get the model url.
+
+    $model_url = $dev->getmodelurl();
+
+Get the model url from the device description.
+
+=item B<getserialnumber> - get the serialnumber.
+
+    $serialnumber = $dev->getserialnumber();
+
+Get the model description from the device description.
+
+=item B<getudn> - get the device UDN.
 
     $udn = $dev->getudn();
 
-Get the udn from the device description.
+Get the UDN from the device description.
+
+=item B<getupc> - get the device UPC.
+
+    $upc = $dev->getupc();
+
+Get the UPC from the device description.
 
 =item B<getservicelist> - get the device type.
 

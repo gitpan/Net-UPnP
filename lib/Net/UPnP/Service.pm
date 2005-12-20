@@ -61,6 +61,16 @@ sub setdevicedescription() {
 
 sub getdevicedescription() {
 	my($this) = shift;
+	my %args = (
+		name => undef,	
+		@_,
+	);
+	if ($args{name}) {
+		unless ($this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION} =~ m/<$args{name}>(.*)<\/$args{name}>/i) {
+			return '';
+		}
+	 	return $1;
+	}
 	$this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION};
  }
 
@@ -70,10 +80,7 @@ sub getdevicedescription() {
 
 sub getservicetype() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION} =~ m/<$Net::UPnP::Service::SERVICETYPE>(.*)<\/$Net::UPnP::Service::SERVICETYPE>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdevicedescription(name => $Net::UPnP::Service::SERVICETYPE);
  }
 
 #------------------------------
@@ -82,10 +89,7 @@ sub getservicetype() {
 
 sub getserviceid() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION} =~ m/<$Net::UPnP::Service::SERVICEID>(.*)<\/$Net::UPnP::Service::SERVICEID>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdevicedescription(name => $Net::UPnP::Service::SERVICEID);
  }
 
 #------------------------------
@@ -94,10 +98,7 @@ sub getserviceid() {
 
 sub getscpdurl() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION} =~ m/<$Net::UPnP::Service::SCPDURL>(.*)<\/$Net::UPnP::Service::SCPDURL>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdevicedescription(name => $Net::UPnP::Service::SCPDURL);
  }
 
 #------------------------------
@@ -106,10 +107,7 @@ sub getscpdurl() {
 
 sub getcontrolurl() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION} =~ m/<$Net::UPnP::Service::CONTROLURL>(.*)<\/$Net::UPnP::Service::CONTROLURL>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdevicedescription(name => $Net::UPnP::Service::CONTROLURL);
  }
 
 #------------------------------
@@ -118,10 +116,7 @@ sub getcontrolurl() {
 
 sub geteventsubrul() {
 	my($this) = shift;
-	unless ($this->{$Net::UPnP::Service::_DEVICE_DESCRIPTION} =~ m/<$Net::UPnP::Service::EVENTSUBURL>(.*)<\/$Net::UPnP::Service::EVENTSUBURL>/i) {
-		return '';
-	}
- 	return $1;
+	$this->getdevicedescription(name => $Net::UPnP::Service::EVENTSUBURL);
  }
 
 #------------------------------
@@ -293,6 +288,16 @@ The package is used a object of UPnP service.
     $description = $service->getdevice();
 
 Get the parent device of the service.
+
+=item B<getdevicedescription> - get the service description of the device description.
+
+    $description = $service->getdevicedescription(
+    	                        name => $name # undef
+                             );
+
+Get the service description of the device description. 
+	
+The function returns the all description when the name parameter is not specified, otherwise return a value the specified name.
 
 =item B<getservicetype> - get the service type.
 

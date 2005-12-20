@@ -4,16 +4,12 @@ package Net::UPnP;
 # UPnP
 #-----------------------------------------------------------------
 
-#require 5.005;
-
 use strict;
 use warnings;
 
-use Socket;
-
 use vars qw($VERSION $DEBUG $SSDP_ADDR $SSDP_PORT);
 
-$VERSION  = '1.1';
+$VERSION  = '1.1.1';
 $DEBUG = 0;
 
 $SSDP_ADDR = '239.255.255.250';

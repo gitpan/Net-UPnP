@@ -1,10 +1,17 @@
 Revision history for Perl extension UPnP.
 
+2005-12-20 Satoshi Konno <skonno@cybergarage.org>
+        * v1.1.1
+	* Changed Net::UPnP::getdescription() to be able to specify the name.
+	* Added some Net::UPnP::get*() to get the description value of the specified name.
+	* Changed Net::Service::getdevicedescription() to be able to specify the name.
+	* Fixed a test case bug in t/UPnP.t.
+
 2005-12-10 Satoshi Konno <skonno@cybergarage.org>
 
         * v1.1
-        * Changed the package from UPnP to Net::UPnP.
         * Added 'use warnings' to all packages.
+	* Changed to the package name from UPnP to Net::UPnP
         * Chanded get*() in Service.pm to return '' instead of undef when the value is not defined.
 
 2005-12-09 Satoshi Konno <skonno@cybergarage.org>
