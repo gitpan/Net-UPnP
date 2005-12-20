@@ -9,7 +9,7 @@ use warnings;
 
 use vars qw($VERSION $DEBUG $SSDP_ADDR $SSDP_PORT);
 
-$VERSION  = '1.1.1';
+$VERSION  = '1.1.2';
 $DEBUG = 0;
 
 $SSDP_ADDR = '239.255.255.250';
@@ -21,7 +21,7 @@ __END__
 
 =head1 NAME
 
-UPnP - Perl extension for UPnP
+Net::UPnP - Perl extension for UPnP
 
 =head1 SYNOPSIS
 
