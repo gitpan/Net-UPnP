@@ -111,16 +111,16 @@ sub getcontrolurl() {
  }
 
 #------------------------------
-# geteventsubrul
+# geteventsuburl
 #------------------------------
 
-sub geteventsubrul() {
+sub geteventsuburl() {
 	my($this) = shift;
 	$this->getdevicedescription(name => $Net::UPnP::Service::EVENTSUBURL);
  }
 
 #------------------------------
-# geteventsubrul
+# postcontrol
 #------------------------------
 
 sub postcontrol() {
@@ -159,7 +159,12 @@ sub postcontrol() {
 		
 	unless ($ctrl_url =~ m/http:\/\/(.*)/i) {
 		if (0 < length($url_base)) {
-			$ctrl_url = $url_base . $ctrl_url;
+			# Thanks for Thus0 (2005/01/12)
+			if (rindex($url_base, '/') == (length($url_base)-1) && index($ctrl_url, '/') == 0) {
+				$ctrl_url = $url_base . substr($ctrl_url, 1);
+			} else {
+				$ctrl_url = $url_base . $ctrl_url;
+			}
 		}
 		else {
 			if ($location_url =~ m/http:\/\/([0-9a-z.]+)[:]*([0-9]*)\/(.*)/i) {

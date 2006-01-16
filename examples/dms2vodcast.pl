@@ -15,7 +15,7 @@ use Shell qw(curl ffmpeg);
 $program_name = 'DLNA Media Sever 2 Vodcast';
 $copy_right = 'Copyright (c) 2005 Satoshi Konno';
 $script_name = 'dms2vodcast.pl';
-$script_version = '1.0.2';
+$script_version = '1.0.3';
 
 #------------------------------
 # global variables
@@ -36,7 +36,8 @@ $rss_link= "";
 $rss_title = "CyberGarage";
 $requested_count = 0;
 $mp4_format = 'ipod';
-
+$title_regexp = "";
+ 
 @command_opt = (
 ['-b', '--base-url', '<url>', 'Set the base url in the item link property of the output RSS file'],
 ['-B', '--base-directory', '<url>', 'Set the base directory to output the RSS file and the MPEG4 files'],
@@ -47,6 +48,7 @@ $mp4_format = 'ipod';
 ['-r', '--requested-count', '<url>', 'Set the max request count to the media server contents'],
 ['-t', '--rss-title', '<file>', 'Set the title tag in the output RSS file'],
 ['-f', '--mp4-format', '<ipod | psp>', 'Set the MPEG4 format'],
+['-s', '--search-title', '<regular expression>', 'Set the regular expression of the content titles by UTF-8'],
 );
 
 sub is_command_option {
@@ -116,6 +118,8 @@ for ($i=0; $i<(@ARGV); $i++) {
 			print "Unkown MPEG4 format : $mp4_format !!\n";
 			exit 1;
 		}
+	} elsif ($opt_short_name eq '-s') {
+		$title_regexp = $ARGV[++$i];
 	} else {
 		$rss_file_name = $opt;
 	}
@@ -136,6 +140,7 @@ print "  base url : $rss_base_url\n";
 print "  base directory : $base_directory\n";
 print "  requested_count : $requested_count\n";
 print "  mp4_format : $mp4_format\n";
+print "  search regexp : $title_regexp\n";
 
 #------------------------------
 # main
@@ -232,8 +237,9 @@ sub parse_content_directory {
 	my $objid = $content->getid();
 
 	if ($content->isitem()) {
+		my $title = $content->gettitle();
 		my $mime = $content->getcontenttype();
-		if ($mime =~ m/video/) {
+		if ( ($mime =~ m/video/) && ( (length($title_regexp) == 0) || ($title =~ m/$title_regexp/) ) ) {
 			my $dms_content_count = @dms_content_list;
 			if ($requested_count == 0 || $dms_content_count < $requested_count) {
 				my $mp4_content = mpeg2tompeg4($mediaServer, $content);

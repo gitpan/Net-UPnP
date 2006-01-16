@@ -1,5 +1,10 @@
 Revision history for Perl extension UPnP.
 
+2005-01-17 Satoshi Konno <skonno@cybergarage.org>
+        * v1.1.3
+        * Changed postcontrol() in Net::UPnP::Service to create the absolute control url normally using the url base and the relative control url.
+        * Added '--search-title' option to selet the taget contents by the regular expression.
+
 2005-12-20 Satoshi Konno <skonno@cybergarage.org>
         * v1.1.2
         * Changed Net::UPnP.pm to get the abstract normally.
