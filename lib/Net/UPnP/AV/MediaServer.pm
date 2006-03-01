@@ -84,7 +84,7 @@ sub browse {
 			'SortCriteria' => $args{SortCriteria},
 		);
 	
-	$condir_service->postcontrol("Browse", \%req_arg);
+	$condir_service->postaction("Browse", \%req_arg);
 }
 
 sub browsedirectchildren {
@@ -210,6 +210,31 @@ sub getcontentlist {
 	}
 
 	@content_list;
+}
+
+#------------------------------
+# getsystemupdateid
+#------------------------------
+
+sub getsystemupdateid {
+	my($this) = shift;
+
+	my (
+		$dev,
+		$condir_service,
+		$query_res,
+	);
+	
+	$dev = $this->getdevice();
+	$condir_service = $dev->getservicebyname($Net::UPnP::AV::MediaServer::CONTENTDIRECTORY_SERVICE_TYPE);
+	
+	$query_res = $condir_service->postquery("SystemUpdateID");
+
+	if ($query_res->getstatuscode() != 200) {
+		return "";
+	}
+	
+	return $query_res->getvalue();
 }
 
 1;

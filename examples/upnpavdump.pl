@@ -5,6 +5,10 @@ use Net::UPnP::AV::MediaServer;
 
 my $obj = Net::UPnP::ControlPoint->new();
 
+if (0< @ARGV) {
+	$target_server_name = $ARGV[0];
+}
+	
 @dev_list = ();
 while (@dev_list <= 0 || $retry_cnt > 5) {
 #	@dev_list = $obj->search(st =>'urn:schemas-upnp-org:device:MediaServer:1', mx => 10);
@@ -12,23 +16,32 @@ while (@dev_list <= 0 || $retry_cnt > 5) {
 	$retry_cnt++;
 } 
 
-
 $devNum= 0;
 foreach $dev (@dev_list) {
 	my $device_type = $dev->getdevicetype();
 	if  ($device_type ne 'urn:schemas-upnp-org:device:MediaServer:1') {
 		next;
 	}
-	print "[$devNum] : " . $dev->getfriendlyname() . "\n";
+	my $friendlyname = $dev->getfriendlyname();
+	if (0 < length($target_server_name)) {
+		unless ($friendlyname =~ $target_server_name) {
+			next;
+		}
+	}
+	print "[$devNum] : " . $friendlyname . "\n";
 	unless ($dev->getservicebyname('urn:schemas-upnp-org:service:ContentDirectory:1')) {
 		next;
 	}
 	my $mediaServer = Net::UPnP::AV::MediaServer->new();
 	$mediaServer->setdevice($dev);
+	
+	print "\tSystemUpdateID = " . $mediaServer->getsystemupdateid() . "\n";
+	
 	my @content_list = $mediaServer->getcontentlist(ObjectID => 0);
 	foreach my $content (@content_list) {
 		print_content($mediaServer, $content, 1);
 	}
+
 	$devNum++;
 }
 

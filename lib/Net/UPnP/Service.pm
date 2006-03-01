@@ -9,6 +9,7 @@ use warnings;
 
 use Net::UPnP;
 use Net::UPnP::ActionResponse;
+use Net::UPnP::QueryResponse;
 
 use vars qw($_DEVICE $_DEVICE_DESCRIPTION $SERVICETYPE $SERVICEID $SCPDURL $CONTROLURL $EVENTSUBURL);
 
@@ -120,32 +121,17 @@ sub geteventsuburl() {
  }
 
 #------------------------------
-# postcontrol
+# getposturl
 #------------------------------
 
-sub postcontrol() {
+sub getposturl() {
 	my($this) = shift;
-	my ($action_name, $action_arg) = @_;
+	my ($ctrl_url) = @_;
 	my (
 		$dev,
 		$location_url,
 		$url_base,
-		$ctrl_url,
-		$service_type,
-		$soap_action,
-		$soap_content,
-		$arg_name,
-		$arg_value,
-		$post_addr,
-		$post_port,
-		$post_path,
-		$http_req,
-		$post_res,
-		$action_res,
-		$key,
 	);
-	
-	$action_res = Net::UPnP::ActionResponse->new();
 	
 	$dev = $this->getdevice();
 	
@@ -178,8 +164,39 @@ sub postcontrol() {
 			}
 		}
 	}
+	
+	return $ctrl_url;
+}
 
-	#print "$ctrl_url\n";
+#------------------------------
+# postaction
+#------------------------------
+
+sub postaction() {
+	my($this) = shift;
+	my ($action_name, $action_arg) = @_;
+	my (
+		$dev,
+		$ctrl_url,
+		$service_type,
+		$soap_action,
+		$soap_content,
+		$arg_name,
+		$arg_value,
+		$post_addr,
+		$post_port,
+		$post_path,
+		$http_req,
+		$post_res,
+		$action_res,
+		$key,
+	);
+	
+	$action_res = Net::UPnP::ActionResponse->new();
+	
+	$dev = $this->getdevice();
+	$ctrl_url = $this->getcontrolurl();
+	$ctrl_url = $this->getposturl($ctrl_url);
 	
 	unless ($ctrl_url =~ m/http:\/\/([0-9a-z.]+)[:]*([0-9]*)\/(.*)/i) {
 		#print "Invalid URL : $ctrl_url\n";
@@ -189,9 +206,13 @@ sub postcontrol() {
 	}
 	$post_addr = $1;
 	$post_port = $2;
-	$post_path = "\/" . $3;
-	#$post_path = $this->getcontrolurl();
-	
+	if (index($3, '/') == 0) {
+		$post_path = $3;
+	}
+	else {
+		$post_path = "\/" . $3;
+	}
+
 	$service_type = $this->getservicetype();
 	$soap_action = "\"" . $service_type . "#" . $action_name . "\"";
 
@@ -225,6 +246,80 @@ SOAP_CONTENT
 	$action_res->sethttpresponse($post_res);
 	
 	return $action_res;
+}
+
+#------------------------------
+# postcontrol
+#------------------------------
+
+sub postcontrol() {
+	my($this) = shift;
+	my ($action_name, $action_arg) = @_;
+	return $this->postaction($action_name, $action_arg);
+}
+
+#------------------------------
+# postquery
+#------------------------------
+
+sub postquery() {
+	my($this) = shift;
+	my ($var_name) = @_;
+	my (
+		$dev,
+		$ctrl_url,
+		$service_type,
+		$soap_action,
+		$soap_content,
+		$post_addr,
+		$post_port,
+		$post_path,
+		$http_req,
+		$post_res,
+		$query_res,
+	);
+	
+	$query_res = Net::UPnP::QueryResponse->new();
+	
+	$dev = $this->getdevice();
+	$ctrl_url = $this->getcontrolurl();
+	$ctrl_url = $this->getposturl($ctrl_url);
+	
+	unless ($ctrl_url =~ m/http:\/\/([0-9a-z.]+)[:]*([0-9]*)\/(.*)/i) {
+		#print "Invalid URL : $ctrl_url\n";
+		$post_res = Net::UPnP::HTTPResponse->new();
+		$query_res->sethttpresponse($post_res);
+		return $query_res;
+	}
+	$post_addr = $1;
+	$post_port = $2;
+	if (index($3, '/') == 0) {
+		$post_path = $3;
+	}
+	else {
+		$post_path = "\/" . $3;
+	}
+	
+	$service_type = $this->getservicetype();
+	$soap_action = "\"urn:schemas-upnp-org:control-1-0#QueryStateVariable\"";
+
+$soap_content = <<"SOAP_CONTENT";
+<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<s:Envelope xmlns:s=\"http:\/\/schemas.xmlsoap.org\/soap\/envelope\/\" s:encodingStyle=\"http:\/\/schemas.xmlsoap.org\/soap\/encoding/\">
+\t<s:Body>
+\t\t<u:QueryStateVariable xmlns:u=\"urn:schemas-upnp-org:control-1-0\">
+\t\t\t<u:varName>$var_name</u:varName>
+\t\t</u:QueryStateVariable>
+\t</s:Body>
+</s:Envelope>
+SOAP_CONTENT
+
+	$http_req = Net::UPnP::HTTP->new();
+	$post_res = $http_req->postsoap($post_addr, $post_port, $post_path, $soap_action, $soap_content);
+
+	$query_res->sethttpresponse($post_res);
+	
+	return $query_res;
 }
 
 1;
@@ -316,11 +411,19 @@ Get the service type.
 
 Get the service id.
 
-=item B<postcontrol> - post a control action.
+=item B<postaction> - post a action control.
 
     $action_res = $service->postcontrol($action_name, \%action_arg);
 
-Post a control action to the device, and return L<Net::UPnP::ActionResponse>.
+Post a action control to the device, and return L<Net::UPnP::ActionResponse>.
+
+The method was renamed from postcontrol(), but the old name is deprecated.
+	
+=item B<postquery> - post a query control.
+
+    $query_res = $service->postcontrol($var_name);
+
+Post a query control to the device, and return L<Net::UPnP::QueryResponse>.
 
 =back
 

@@ -90,6 +90,7 @@ sub getargumentlist() {
 		$soap_response,
 		$arg_name,
 		$arg_value,
+		@arg_name_token,
 	);
 	
 	%argument_list = ();
@@ -108,6 +109,12 @@ sub getargumentlist() {
 	
 	while ($soap_response =~ m/<([^>]*)>([^<]*)<\/[^>]*>/sg) {
 		$arg_name = $1;
+		if (0 < index($arg_name, ' ')) {
+			@arg_name_token = split(/ /, $arg_name);
+			if (0 < @arg_name_token) {
+				$arg_name = $arg_name_token[0];
+			}
+		}
 		$arg_value = $2;
 		$arg_value = Net::UPnP::HTTP::xmldecode($arg_value);
 		$argument_list{$arg_name} = $arg_value;
@@ -179,13 +186,13 @@ The package is used a object of the action response.
 
 =item B<getstatuscode> - get the status code.
 
-    $status_code = $service->getstatuscode();
+    $status_code = $actionres->getstatuscode();
 
 Get the status code of the SOAP response.
 
 =item B<getargumentlist> - get the argument list.
 
-    \%argument_list = $service->getargumentlist();
+    \%argument_list = $actionres->getargumentlist();
 
 Get the argument list of the SOAP response.
 
