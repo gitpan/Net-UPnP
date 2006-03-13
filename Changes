@@ -1,10 +1,15 @@
 Revision history for Perl extension UPnP.
 
-2006-02-xx Satoshi Konno <skonno@cybergarage.org>
+2006-03-13 Satoshi Konno <skonno@cybergarage.org>
+        * v1.2.1
+	* Added QueryResponse.pm to the package.
+
+2006-03-02 Satoshi Konno <skonno@cybergarage.org>
         * v1.2
-        * Renamed Net::UPnP::Service::postcontrol() to postaction(). postcontrol() is deprecated.
+        * Renamed Net::UPnP::Service::postcontrol() to postaction(). The postcontrol() will be deprecated.
         * Added Net::UPnP::Service::postquery().
         * Added Net::UPnP::GW::Gateway to control IGD, Internet Gateway devices, such as broad band routers.
+        * Added two example, upnpgwdump.pl and upnpgwtool, for Net::UPnP::GW.
         * Changed upnpavdump.pl to specify the target media server.
         * Fixed ActionResponse::getargumentlist() to remove extra attributes of the tag name.
 
