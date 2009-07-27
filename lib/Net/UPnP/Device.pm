@@ -62,7 +62,8 @@ sub getdescription() {
 		@_,
 	);
 	if ($args{name}) {
-		unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<$args{name}>(.*)<\/$args{name}>/i) {
+		# Thanks for Tim Engler <engler at gmail.com> (2009/06/10)
+		unless ($this->{$Net::UPnP::Device::_DESCRIPTION} =~ m/<$args{name}>(.*?)<\/$args{name}>/i) {
 			return '';
 		}
 	 	return $1;
